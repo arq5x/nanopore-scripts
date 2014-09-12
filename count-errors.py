@@ -4,15 +4,15 @@ from collections import Counter
 
 
 # http://pysam.readthedocs.org/en/latest/api.html#pysam.AlignedRead.cigar
-MATCH  = 0	# M
-INS    = 1	# I
-DEL    = 2	# D
-SKIP   = 3	# N
-SOFT   = 4	# S
-HARD   = 5	# H
+MATCH  = 0  # M
+INS    = 1  # I
+DEL    = 2  # D
+SKIP   = 3  # N
+SOFT   = 4  # S
+HARD   = 5  # H
 PAD    = 6  # P
-EQUAL  = 7	# =
-DIFF   = 8	# X
+EQUAL  = 7  # =
+DIFF   = 9  # X
 
 
 def cigar_profile(cigar_tuples):
@@ -46,17 +46,19 @@ def get_total_unaligned(cigar_prof):
 print '\t'.join(['query', 'read_type', 'align_len', 'unalign_len', 'matches', 
 	'mismatches', 'insertions', 'deletions', 'tot_errors', 'identity'])
 
+# iterate through each BAM alignment 
+# and report its alignment and error profile
 bam = pysam.Samfile(sys.argv[1])
 for read in bam:
-	cigar_summary = cigar_profile(read.cigar)
-	total_errors = get_total_differences(cigar_summary)
-	unaligned_len = get_total_unaligned(cigar_summary)
+	cigar_prof = cigar_profile(read.cigar)
+	total_errors = get_total_differences(cigar_prof)
+	unaligned_len = get_total_unaligned(cigar_prof)
 	read_type = read.qname.split('_')[4]
    	print '\t'.join(str(s) for s in [read.qname, read_type, read.alen, 
    		unaligned_len, \
-	   	cigar_summary[EQUAL], \
-	   	cigar_summary[DIFF], \
-	   	cigar_summary[INS], \
-	   	cigar_summary[DEL], \
+	   	cigar_prof[EQUAL], \
+	   	cigar_prof[DIFF], \
+	   	cigar_prof[INS], \
+	   	cigar_prof[DEL], \
 	   	total_errors, \
 	   	1.0-(float(total_errors) / float(read.alen))])
