@@ -1,6 +1,8 @@
 library('ggplot2')
 
-mapstat <- read.table('reads.fa.bam.profile.txt', header=TRUE)
+args <- commandArgs(trailingOnly = TRUE)
+
+mapstat <- read.table(args[1], header=TRUE)
 
 ggplot(mapstat, 
        aes(x=identity, 
