@@ -5,26 +5,26 @@ from collections import Counter
 
 # http://pysam.readthedocs.org/en/latest/api.html#pysam.AlignedRead.cigar
 MATCH  = 0	# M
-INS	   = 1	# I
-DEL	   = 2	# D
+INS    = 1	# I
+DEL    = 2	# D
 SKIP   = 3	# N
 SOFT   = 4	# S
 HARD   = 5	# H
-PAD	   = 6  # P
+PAD    = 6  # P
 EQUAL  = 7	# =
 DIFF   = 8	# X
 
 
-bam = pysam.Samfile(sys.argv[1])
-
-def cigar_profile(cigar):
+def cigar_profile(cigar_tuples):
 	"""
 	Return a dictionary that tabulates the total number
 	of bases associated with each CIGAR operation.
+
+	cigar_tuples is a list of (op, length) tuples.
 	"""
 	cigar_prof = Counter()
-	for op in cigar:
-		cigar_prof[op[0]] += op[1]
+	for cigar_tuple in cigar_tuples:
+		cigar_prof[cigar_tuple[0]] += cigar_tuple[1]
 	return cigar_prof
 
 def get_total_differences(cigar_prof):
@@ -42,8 +42,11 @@ def get_total_unaligned(cigar_prof):
 	return cigar_prof[HARD]	+ cigar_prof[SOFT]
 
 
+# header
 print '\t'.join(['query', 'read_type', 'align_len', 'unalign_len', 'matches', 
 	'mismatches', 'insertions', 'deletions', 'tot_errors', 'identity'])
+
+bam = pysam.Samfile(sys.argv[1])
 for read in bam:
 	cigar_summary = cigar_profile(read.cigar)
 	total_errors = get_total_differences(cigar_summary)
