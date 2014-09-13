@@ -42,23 +42,41 @@ def get_total_unaligned(cigar_prof):
 	return cigar_prof[HARD]	+ cigar_prof[SOFT]
 
 
-# header
-print '\t'.join(['query', 'read_type', 'align_len', 'unalign_len', 'matches', 
-	'mismatches', 'insertions', 'deletions', 'tot_errors', 'identity'])
 
+# Pass 1:
 # iterate through each BAM alignment 
-# and report its alignment and error profile
+# and store the best alignment for the read
+
+# best_align:
+#	key is query name
+#   val is tuple of (alignment length, cigar_prof)
+best_align = {}
 bam = pysam.Samfile(sys.argv[1])
 for read in bam:
 	cigar_prof = cigar_profile(read.cigar)
+
+	if read.qname not in best_align:
+		best_align[read.qname] = (read.alen, cigar_prof)
+	elif read.qname in best_align \
+	and read.alen > best_align[read.qname][0]:
+		best_align[read.qname] = (read.alen, cigar_prof)
+
+
+# Pass 2:
+# Report the alignment and error profile for each read's best alignment
+print '\t'.join(['query', 'read_type', 'align_len', 'unalign_len', 'matches', 
+	'mismatches', 'insertions', 'deletions', 'tot_errors', 'identity'])
+for query in best_align:
+	read_type = query.split('_')[4]
+	alen = best_align[query][0]
+	cigar_prof = best_align[query][1]
 	total_errors = get_total_differences(cigar_prof)
 	unaligned_len = get_total_unaligned(cigar_prof)
-	read_type = read.qname.split('_')[4]
-   	print '\t'.join(str(s) for s in [read.qname, read_type, read.alen, 
+   	print '\t'.join(str(s) for s in [query, read_type, alen, 
    		unaligned_len, \
 	   	cigar_prof[EQUAL], \
 	   	cigar_prof[DIFF], \
 	   	cigar_prof[INS], \
 	   	cigar_prof[DEL], \
 	   	total_errors, \
-	   	1.0-(float(total_errors) / float(read.alen))])
+	   	1.0-(float(total_errors) / float(alen))])
