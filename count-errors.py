@@ -12,7 +12,7 @@ SOFT   = 4  # S
 HARD   = 5  # H
 PAD    = 6  # P
 EQUAL  = 7  # =
-DIFF   = 9  # X
+DIFF   = 8  # X
 
 
 def cigar_profile(cigar_tuples):
