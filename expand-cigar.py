@@ -1,7 +1,6 @@
 import sys
 import pysam
 import argparse
-from itertools import groupby
 
 """Author: Aaron R. Quinlan, December 2014"""
 
