@@ -75,7 +75,7 @@ def main(args):
                     qry_seq = read.query_sequence[qry_pos:qry_pos + op_len]
                     ref_seq = curr_chrom_seq[ref_pos:ref_pos + op_len]
                     if qry_seq == ref_seq:
-                        new_cigar.append((7, len(qry_seq))  # EQUAL (=)
+                        new_cigar.append((7, len(qry_seq)))  # EQUAL (=)
                     else:  # expand the M CIGAR op into X and = ops.
                         for new_cigar_tuple in expand_match(qry_seq, ref_seq):
                             new_cigar.append(new_cigar_tuple)
