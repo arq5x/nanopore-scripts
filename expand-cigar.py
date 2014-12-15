@@ -73,7 +73,7 @@ def main(args):
                     qry_seq = read.query_sequence[qry_pos:qry_pos+op_len]
                     ref_seq = curr_chrom_seq[ref_pos:ref_pos+op_len]
                     if qry_seq == ref_seq:
-                        new_cigar.append((7, len(qry_seq))) #EQUAL (=)
+                        new_cigar.append((7, len(qry_seq)) #EQUAL (=)
                     else: # expand the M CIGAR op into X and = ops.
                         for new_cigar_tuple in expand_match(qry_seq, ref_seq):
                             new_cigar.append(new_cigar_tuple)
@@ -94,20 +94,18 @@ def main(args):
         read.cigar = new_cigar
         outfile.write(read)
         prev_chrom_id = curr_chrom_id
-
     outfile.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='expand_cigar.py')
     parser.add_argument('--bam',
-    dest='bam',
-    metavar='STRING',
-    help='The sorted BAM file whose CIGARs you wish expand.')
+        dest='bam',
+        metavar='STRING',
+        help='The sorted BAM file whose CIGARs you wish expand.')
     parser.add_argument('--fasta',
-    dest='fasta',
-    metavar='STRING',
-    help='The reference genome used to create the BAM.')
-    # parse the args and call the selected function
+        dest='fasta',
+        metavar='STRING',
+        help='The reference genome used to create the BAM.')
     args = parser.parse_args()
     
     main(args)
