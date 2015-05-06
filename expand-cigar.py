@@ -55,6 +55,11 @@ def main(args):
     curr_chrom_id = None
     curr_chrom_seq = None
     for read in bam:
+
+        # skip unaligned reads.
+        if read.is_unmapped:
+            continue
+
         curr_chrom_id = read.reference_id
 
         # load the current chromosome into memory
